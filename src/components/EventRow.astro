@@ -1,0 +1,29 @@
+---
+import type { SanghaEvent, Occurrence } from '../lib/events';
+import { CATEGORY_LABELS } from '../lib/events';
+import { monthShort, dayNum, weekdayShort, timeRange, shortDate } from '../lib/dates';
+
+interface Props { event: SanghaEvent; occurrence?: Occurrence; showSummary?: boolean; showTag?: boolean; showAction?: boolean }
+const { event, occurrence = event.next, showSummary = false, showTag = false, showAction = false } = Astro.props;
+const multiDay = !event.isSeries && occurrence.end && shortDate(occurrence.end) !== shortDate(occurrence.start);
+const when = multiDay ? `Through ${shortDate(occurrence.end!)}` : timeRange(occurrence.start, occurrence.end, occurrence.hasTime);
+const meta = [when, event.location].filter(Boolean).join(' · ');
+---
+<li class="event" data-cat={event.category}>
+  <div class="date">
+    <span class="m">{monthShort(occurrence.start)}</span>
+    <span class="d">{dayNum(occurrence.start)}</span>
+    <span class="w">{weekdayShort(occurrence.start)}</span>
+  </div>
+  <div>
+    {showTag && <span class="tag">{CATEGORY_LABELS[event.category]}</span>}
+    <h3><a href={`/events/${event.id}/`}>{event.name}</a></h3>
+    <p class="meta">{meta}</p>
+    {showSummary && event.summary && <p class="summary">{event.summary}</p>}
+  </div>
+  {showAction && (
+    <div class="action">
+      <a class="btn btn--ghost btn--small" href={`/events/${event.id}/`}>{event.registrationEnabled ? 'Details & registration' : 'Details'}</a>
+    </div>
+  )}
+</li>

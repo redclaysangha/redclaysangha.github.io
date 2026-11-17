@@ -1,0 +1,17 @@
+---
+// A simple eight-spoked dharma wheel, drawn as line art for use as a faint backdrop.
+const spokes = Array.from({ length: 8 }, (_, i) => i * 45);
+---
+<svg class="wheel" viewBox="-110 -110 220 220" fill="none" stroke="currentColor" aria-hidden="true">
+  <circle r="100" stroke-width="5" />
+  <circle r="88" stroke-width="1.5" />
+  <circle r="20" stroke-width="5" />
+  <circle r="7" fill="currentColor" stroke="none" />
+  {spokes.map((a) => (
+    <g transform={`rotate(${a})`}>
+      <line y1="-20" y2="-88" stroke-width="5" />
+      <circle cy="-104" r="5" fill="currentColor" stroke="none" />
+      <path d="M -9 -62 Q 0 -74 9 -62 Q 0 -50 -9 -62 Z" fill="currentColor" stroke="none" />
+    </g>
+  ))}
+</svg>

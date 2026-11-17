@@ -1,0 +1,138 @@
+---
+import Base from '../layouts/Base.astro';
+import Wheel from '../components/Wheel.astro';
+import EventRow from '../components/EventRow.astro';
+import site from '../data/site.json';
+import talks from '../data/talks.json';
+import { getEvents, byCategory, weeklySchedule } from '../lib/events';
+import { longDate, time, shortDate } from '../lib/dates';
+
+const events = await getEvents();
+const { regular, others } = weeklySchedule(events);
+const retreats = byCategory(events, 'retreats').slice(0, 5);
+const special = byCategory(events, 'special').slice(0, 5);
+const sunday = events.find((e) => /sunday morning/i.test(e.name));
+const recentTalks = [...talks.sundayTalks].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+const talkDate = (iso: string) => shortDate(new Date(`${iso}T12:00:00-05:00`));
+---
+<Base>
+  <section class="hero">
+    <Wheel />
+    <div class="wrap">
+      <div class="hero-text">
+        <p class="eyebrow">{site.tagline}</p>
+        <h1>Welcome to <em>Red Clay Sangha</em></h1>
+        <p class="lede">{site.welcome}</p>
+        <div class="hero-actions">
+          <a class="btn btn--solid" href={site.zoomUrl}>Join by Zoom</a>
+          <a class="btn btn--ghost" href={site.mapUrl}>Visit in person</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <img src="/images/zendo.jpg" alt="The meditation hall at Red Clay Sangha" width="1200" height="801" />
+      </div>
+    </div>
+  </section>
+
+  {sunday && (
+    <section class="next-up" aria-label="Next Sunday service">
+      <div class="wrap">
+        <div>
+          <p class="label">Next Sunday service</p>
+          <p class="what">{longDate(sunday.next.start)} at {time(sunday.next.start)}</p>
+          <p>{sunday.name}{sunday.location && ` · ${sunday.location}`}</p>
+        </div>
+        <a class="btn" href={`/events/${sunday.id}/`}>What to expect</a>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="heading">
+        <img src="/images/emblem.png" alt="" width="220" height="125" loading="lazy" />
+        <h2>Weekly Programs</h2>
+        <p>{site.newcomers.split('. ')[0]}.</p>
+      </div>
+      <ul class="week">
+        {regular.map((e) => (
+          <li>
+            <a href={`/events/${e.id}/`}>
+              <span class="when">{e.rhythm} · {time(e.next.start)}</span>
+              <h3>{e.name}</h3>
+              <p class="where">{e.location}</p>
+            </a>
+          </li>
+        ))}
+        {others.map((e) => (
+          <li>
+            <a href={`/events/${e.id}/`}>
+              <span class="when">{e.rhythm || 'Next'} · {shortDate(e.next.start)}, {time(e.next.start)}</span>
+              <h3>{e.name}</h3>
+              <p class="where">{e.location}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="section-foot"><a class="more" href="/programs/">About our programs</a></p>
+    </div>
+  </section>
+
+  <section class="section section--sand">
+    <div class="wrap two-col">
+      <div>
+        <h2>Retreats &amp; Study</h2>
+        <ul class="events">{retreats.map((e) => <EventRow event={e} />)}</ul>
+      </div>
+      <div>
+        <h2>Special Events</h2>
+        <ul class="events">{special.map((e) => <EventRow event={e} />)}</ul>
+      </div>
+    </div>
+    <div class="wrap"><p class="section-foot"><a class="more" href="/calendar/">See the full calendar</a></p></div>
+  </section>
+
+  <section class="section">
+    <div class="wrap talks">
+      <div>
+        <p class="eyebrow">Sunday dharma talks</p>
+        <h2>Recent and upcoming talks</h2>
+        <ul class="talk-list">
+          {recentTalks.map((t) => (
+            <li>
+              <span class="on">{talkDate(t.date)}</span>
+              <span>
+                <span class="title">{t.url ? <a href={t.url}>{t.title}</a> : t.title}</span><br />
+                <span class="by">{t.speaker}{t.url && ' · recording available'}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Archive of talks</p>
+        <p>Dharma talks from our regular Sunday and Thursday programming are generally recorded and archived on our <a href={site.youtubeUrl}>YouTube channel</a>, where they are organized in playlists.</p>
+        <ul class="playlists">
+          {talks.playlists.map((p) => (
+            <li><a href={p.url}><strong>{p.title}</strong><span>{p.description}</span></a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sand">
+    <div class="wrap band">
+      <img src="/images/community.jpg" alt="Sangha members gathered at Red Clay Sangha" width="1800" height="1202" loading="lazy" />
+      <div>
+        <p class="eyebrow">New here?</p>
+        <h2>Everyone is welcome</h2>
+        <p>{site.newcomers}</p>
+        <div class="hero-actions">
+          <a class="btn btn--solid" href="/programs/">See our programs</a>
+          <a class="btn btn--ghost" href="/contact/">Contact us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

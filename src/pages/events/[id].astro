@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import Wheel from '../../components/Wheel.astro';
+import { getEvents, CATEGORY_LABELS, type SanghaEvent } from '../../lib/events';
+import { dateRange, timeRange, longDate, time } from '../../lib/dates';
+
+export async function getStaticPaths() {
+  const events = await getEvents();
+  return events.map((event) => ({ params: { id: String(event.id) }, props: { event } }));
+}
+interface Props { event: SanghaEvent }
+const { event } = Astro.props;
+const { next } = event;
+const hours = timeRange(next.start, next.end, next.hasTime);
+const later = event.occurrences.slice(1, 7);
+const price = (n: number) => (n === 0 ? 'Free' : `$${n.toLocaleString('en-US')}`);
+---
+<Base title={event.name} description={event.summary || undefined}>
+  <header class="page-head">
+    <Wheel />
+    <div class="wrap">
+      <p class="crumb"><a href="/calendar/">← Calendar</a></p>
+      <p class="eyebrow">{CATEGORY_LABELS[event.category]}</p>
+      <h1>{event.name}</h1>
+    </div>
+  </header>
+  <section class="section">
+    <div class="wrap detail">
+      <div class="prose" set:html={event.descriptionHtml || '<p>Details to come.</p>'} />
+      <aside class="facts" aria-label="Event details">
+        <dl>
+          <dt>{event.isSeries ? 'Next session' : 'When'}</dt>
+          <dd>{event.isSeries ? longDate(next.start) : dateRange(next.start, next.end)}{hours && <><br />{hours}</>}</dd>
+          {event.location && <><dt>Where</dt><dd>{event.location}</dd></>}
+          {later.length > 0 && (
+            <>
+              <dt>Following dates</dt>
+              <dd><ul>{later.map((o) => <li><span>{longDate(o.start).replace(/, \d{4}$/, '')}</span><span>{o.hasTime && time(o.start)}</span></li>)}</ul></dd>
+            </>
+          )}
+          {event.registrationEnabled && event.regTypes.length > 0 && (
+            <>
+              <dt>Registration</dt>
+              <dd><ul>{event.regTypes.map((r) => (
+                <li><span>{r.name}{r.membersOnly && <small>Members only</small>}</span><span>{price(r.price)}</span></li>
+              ))}</ul></dd>
+            </>
+          )}
+        </dl>
+        {event.registrationEnabled && (
+          <>
+            <a class="btn btn--solid" href={event.registerUrl}>Register</a>
+            <p class="note">Registration opens on our members site.</p>
+          </>
+        )}
+      </aside>
+    </div>
+  </section>
+</Base>

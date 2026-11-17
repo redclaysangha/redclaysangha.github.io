@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import Wheel from '../components/Wheel.astro';
+import EventRow from '../components/EventRow.astro';
+import { getEvents, CATEGORY_LABELS, type Category } from '../lib/events';
+import { monthYear } from '../lib/dates';
+
+const events = await getEvents();
+// Recurring programs repeat for months and would swamp the list, so show the weekly sits
+// for the next three weeks and the monthly ones for their next three dates.
+// Retreats, study series and one-off events are listed however far ahead they are.
+const horizon = Date.now() + 21 * 86400000;
+const datesToList = (event: (typeof events)[number]) => {
+  if (event.category !== 'weekly' || !event.isSeries) return event.occurrences;
+  return event.rhythm.endsWith('s')
+    ? event.occurrences.filter((o) => o.start.getTime() <= horizon)
+    : event.occurrences.slice(0, 3);
+};
+const rows = events
+  .flatMap((event) => datesToList(event).map((occurrence) => ({ event, occurrence })))
+  .sort((a, b) => a.occurrence.start.getTime() - b.occurrence.start.getTime());
+
+const months = new Map<string, typeof rows>();
+for (const row of rows) {
+  const key = monthYear(row.occurrence.start);
+  months.set(key, [...(months.get(key) ?? []), row]);
+}
+const filters: Category[] = ['retreats', 'special', 'weekly'];
+---
+<Base title="Calendar" description="Upcoming retreats, study, special events and weekly programs at Red Clay Sangha.">
+  <header class="page-head">
+    <Wheel />
+    <div class="wrap">
+      <h1>Calendar</h1>
+      <p class="lede">Retreats, study, special events and our weekly programs.</p>
+    </div>
+  </header>
+  <section class="section">
+    <div class="wrap narrow" style="max-width: 54rem">
+      <div class="filters" role="group" aria-label="Show">
+        <button type="button" data-filter="all" aria-pressed="true">Everything</button>
+        {filters.map((c) => <button type="button" data-filter={c} aria-pressed="false">{CATEGORY_LABELS[c]}</button>)}
+      </div>
+      <p class="filters-note">Weekly programs are listed for the next three weeks; they continue beyond that. See <a href="/programs/">Programs</a> for the regular schedule.</p>
+      {[...months.entries()].map(([label, items]) => (
+        <section class="month">
+          <h2>{label}</h2>
+          <ul class="events">
+            {items.map(({ event, occurrence }) => <EventRow event={event} occurrence={occurrence} showTag showAction />)}
+          </ul>
+        </section>
+      ))}
+      <p class="lede" id="empty" hidden>Nothing scheduled in this category yet.</p>
+    </div>
+  </section>
+
+  <script is:inline>
+    const buttons = document.querySelectorAll('.filters button');
+    const apply = (filter) => {
+      let shown = 0;
+      document.querySelectorAll('.month').forEach((month) => {
+        let any = false;
+        month.querySelectorAll('.event').forEach((row) => {
+          const show = filter === 'all' || row.dataset.cat === filter;
+          row.hidden = !show;
+          any ||= show;
+          if (show) shown++;
+        });
+        month.hidden = !any;
+      });
+      document.getElementById('empty').hidden = shown > 0;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+    };
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter)));
+  </script>
+</Base>

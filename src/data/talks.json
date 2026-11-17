@@ -1,0 +1,17 @@
+{
+  "playlists": [
+    { "title": "Featured Talks", "description": "A selection from among our library of recordings", "url": "https://www.youtube.com/playlist?list=PLA2oolq2Fcwg" },
+    { "title": "Working With the Mind", "description": "A five part series on the 51 Mental Factors from Yogacara", "url": "https://www.youtube.com/watch?v=dYbT371AeH8&list=PLTDYxwd6T8vM" },
+    { "title": "Foundations of Practice", "description": "An ongoing Sunday morning series of talks", "url": "https://www.youtube.com/watch?v=DnQumGDm4ZQ&list=PL0RApaSLry_r-HngU9BWIN072b6Mu_iZi" }
+  ],
+  "sundayTalks": [
+    { "date": "2026-10-04", "speaker": "Gareth Young", "title": "Resiliency in Buddhist Practice", "url": "https://youtu.be/WmJfp1VEbIY" },
+    { "date": "2026-10-11", "speaker": "Anand G", "title": "Views", "url": "https://youtu.be/ba3XRpx5Wkc" },
+    { "date": "2026-10-18", "speaker": "Gareth Young", "title": "Resiliency: Just Practice!", "url": "https://youtu.be/k9ZFlpy3T1o" },
+    { "date": "2026-10-25", "speaker": "Gareth Young", "title": "Precepts Renewal", "url": "" },
+    { "date": "2026-11-01", "speaker": "Anand G", "title": "Views (Cont.)", "url": "https://youtu.be/zEQg7Q5tHDg" },
+    { "date": "2026-11-08", "speaker": "Gareth Young", "title": "Gratitude", "url": "https://youtu.be/28tQOKsXJ9c" },
+    { "date": "2026-11-15", "speaker": "Gareth Young", "title": "Foundations of Practice (cont)", "url": "" },
+    { "date": "2026-11-22", "speaker": "Gareth Young", "title": "Foundations of Practice (cont)", "url": "" }
+  ]
+}

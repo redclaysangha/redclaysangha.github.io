@@ -1,0 +1,74 @@
+# Editing screen configuration (Sveltia CMS).
+# Events are NOT edited here: they come from Wild Apricot automatically.
+
+backend:
+  name: github
+  repo: redclaysangha/redclaysangha.github.io
+  branch: main
+
+media_folder: public/images/pages
+public_folder: /images/pages
+
+collections:
+  - name: pages
+    label: Pages
+    label_singular: page
+    folder: src/content/pages
+    extension: md
+    format: frontmatter
+    # New pages also need an address in src/lib/nav.ts, so creating them here is switched off.
+    create: false
+    delete: false
+    summary: '{{title}}'
+    fields:
+      - { name: title, label: Page title, widget: string }
+      - { name: intro, label: Introduction (optional, shown under the title), widget: text, required: false }
+      - { name: body, label: Page content, widget: markdown }
+
+  - name: home
+    label: Home page
+    files:
+      - name: talks
+        label: Sunday talks and playlists
+        file: src/data/talks.json
+        fields:
+          - name: sundayTalks
+            label: Sunday talks
+            label_singular: talk
+            widget: list
+            summary: '{{date}} · {{speaker}} · {{title}}'
+            fields:
+              - { name: date, label: Date, widget: datetime, time_format: false, format: YYYY-MM-DD }
+              - { name: speaker, label: Speaker, widget: string }
+              - { name: title, label: Talk title, widget: string }
+              - { name: url, label: Recording link (leave empty until it is posted), widget: string, required: false }
+          - name: playlists
+            label: YouTube playlists
+            label_singular: playlist
+            widget: list
+            summary: '{{title}}'
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: description, label: Description, widget: string }
+              - { name: url, label: Link, widget: string }
+
+  - name: settings
+    label: Site settings
+    files:
+      - name: site
+        label: Welcome text, address and links
+        file: src/data/site.json
+        fields:
+          - { name: name, label: Site name, widget: string }
+          - { name: tagline, label: Tagline, widget: string }
+          - { name: description, label: Description for search engines, widget: text }
+          - { name: welcome, label: Welcome paragraph (home page), widget: text }
+          - { name: newcomers, label: Newcomers paragraph (home page), widget: text }
+          - { name: address, label: Street address, widget: string }
+          - { name: mapUrl, label: Map link, widget: string }
+          - { name: postalAddress, label: Postal address, widget: string }
+          - { name: email, label: Contact email, widget: string }
+          - { name: zoomUrl, label: Zoom link, widget: string }
+          - { name: youtubeUrl, label: YouTube channel link, widget: string }
+          - { name: membersSite, label: Wild Apricot site address, widget: string }
+          - { name: hideFromSearchEngines, label: Hide the site from search engines (switch off at launch), widget: boolean, default: true }

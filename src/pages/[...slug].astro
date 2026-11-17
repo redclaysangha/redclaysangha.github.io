@@ -1,0 +1,40 @@
+---
+// Renders every Markdown page in src/content/pages/ at the address set in src/lib/nav.ts.
+import Base from '../layouts/Base.astro';
+import Wheel from '../components/Wheel.astro';
+import { allPages, sectionOf, type PageRef } from '../lib/nav';
+
+export function getStaticPaths() {
+  return allPages.map((page) => ({
+    params: { slug: page.path.replace(/^\/|\/$/g, '') },
+    props: { page },
+  }));
+}
+interface Props { page: PageRef }
+const { page } = Astro.props;
+const files = import.meta.glob('../content/pages/*.md', { eager: true }) as Record<string, any>;
+const doc = files[`../content/pages/${page.file}.md`];
+if (!doc) throw new Error(`src/lib/nav.ts lists "${page.file}" but src/content/pages/${page.file}.md does not exist`);
+const { frontmatter, Content } = doc;
+const section = sectionOf(page.file);
+---
+<Base title={frontmatter.title} description={frontmatter.intro}>
+  <header class="page-head">
+    <Wheel />
+    <div class="wrap">
+      {section && <p class="eyebrow">{section.label}</p>}
+      <h1>{frontmatter.title}</h1>
+      {frontmatter.intro && <p class="lede">{frontmatter.intro}</p>}
+    </div>
+  </header>
+  {section && (
+    <nav class="subnav" aria-label={`${section.label} pages`}>
+      <div class="wrap">
+        {section.pages.map((p) => <a href={p.path} aria-current={p.file === page.file ? 'page' : undefined}>{p.label}</a>)}
+      </div>
+    </nav>
+  )}
+  <section class="section">
+    <div class="wrap narrow prose prose--page"><Content /></div>
+  </section>
+</Base>
