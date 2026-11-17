@@ -13,7 +13,13 @@ const { regular, others } = weeklySchedule(events);
 const retreats = byCategory(events, 'retreats').slice(0, 5);
 const special = byCategory(events, 'special').slice(0, 5);
 const sunday = events.find((e) => /sunday morning/i.test(e.name));
-const recentTalks = (await getSundayTalks()).slice(0, 6);
+// Show the next two upcoming talks and the four most recent past ones, newest first, so a
+// long list of scheduled talks never pushes the recordings off the page.
+const allTalks = await getSundayTalks();
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+const upcomingTalks = allTalks.filter((t) => t.date >= today).slice(-2);
+const pastTalks = allTalks.filter((t) => t.date < today).slice(0, 4);
+const recentTalks = [...upcomingTalks, ...pastTalks];
 const talkDate = (iso: string) => shortDate(new Date(`${iso}T12:00:00-05:00`));
 ---
 <Base>
