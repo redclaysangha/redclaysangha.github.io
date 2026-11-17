@@ -25,7 +25,8 @@ WA_API_KEY=...
 |---|---|
 | Events (from Wild Apricot) | `src/lib/events.ts` |
 | Welcome text, address, links | `src/data/site.json` |
-| Sunday talks and playlists | `src/data/talks.json` |
+| Sunday talks: recordings (from YouTube) | `src/lib/talks.ts` |
+| Sunday talks: upcoming, and playlists | `src/data/talks.json` |
 | Page text (About, Programs, Engage, Resources…) | `src/content/pages/*.md` |
 | Page addresses and section menus | `src/lib/nav.ts` |
 | Documents (study guides, liturgy) | `public/documents/` |
@@ -44,3 +45,9 @@ calendar only. Events that are not public in Wild Apricot are never shown.
 
 Event registration, the credit-card donation form, the new member form, the mailing-list
 sign-up and member log in. The site links to each of these.
+
+## How Sunday talk recordings appear
+
+A video on the YouTube channel is listed as a Sunday talk when the first line of its
+description reads `Sunday talk · Speaker Name · November 8, 2026`. Only the channel's 15
+most recent uploads are checked, which is what YouTube's public feed provides.

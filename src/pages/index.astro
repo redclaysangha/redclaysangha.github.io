@@ -4,6 +4,7 @@ import Wheel from '../components/Wheel.astro';
 import EventRow from '../components/EventRow.astro';
 import site from '../data/site.json';
 import talks from '../data/talks.json';
+import { getSundayTalks } from '../lib/talks';
 import { getEvents, byCategory, weeklySchedule } from '../lib/events';
 import { longDate, time, shortDate } from '../lib/dates';
 
@@ -12,7 +13,7 @@ const { regular, others } = weeklySchedule(events);
 const retreats = byCategory(events, 'retreats').slice(0, 5);
 const special = byCategory(events, 'special').slice(0, 5);
 const sunday = events.find((e) => /sunday morning/i.test(e.name));
-const recentTalks = [...talks.sundayTalks].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+const recentTalks = (await getSundayTalks()).slice(0, 6);
 const talkDate = (iso: string) => shortDate(new Date(`${iso}T12:00:00-05:00`));
 ---
 <Base>

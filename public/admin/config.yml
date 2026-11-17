@@ -33,7 +33,7 @@ collections:
         file: src/data/talks.json
         fields:
           - name: sundayTalks
-            label: Sunday talks
+            label: Sunday talks (upcoming talks, or corrections; recordings appear automatically from YouTube)
             label_singular: talk
             widget: list
             summary: '{{date}} · {{speaker}} · {{title}}'
@@ -70,5 +70,6 @@ collections:
           - { name: email, label: Contact email, widget: string }
           - { name: zoomUrl, label: Zoom link, widget: string }
           - { name: youtubeUrl, label: YouTube channel link, widget: string }
+          - { name: youtubeChannelId, label: YouTube channel ID (used to list Sunday talk recordings automatically), widget: string, required: false }
           - { name: membersSite, label: Wild Apricot site address, widget: string }
           - { name: hideFromSearchEngines, label: Hide the site from search engines (switch off at launch), widget: boolean, default: true }
