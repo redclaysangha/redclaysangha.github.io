@@ -7,14 +7,15 @@ const { title, description = site.description } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · Buddhist meditation and community in Atlanta`;
 const M = site.membersSite;
 const path = Astro.url.pathname;
+// "also" lists other addresses that belong under a menu item, so it stays highlighted there.
 const nav = [
-  { label: 'Programs', href: '/programs/' },
-  { label: 'Calendar', href: '/calendar/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Engage', href: '/engage/' },
-  { label: 'Resources', href: '/resources/' },
-  { label: 'Contact', href: '/contact/' },
+  { label: 'About', href: '/about/', also: ['/programs/'] },
+  { label: 'Calendar', href: '/calendar/', also: ['/events/'] },
+  { label: 'Engage', href: '/engage/', also: [] },
+  { label: 'Resources', href: '/resources/', also: [] },
+  { label: 'Contact', href: '/contact/', also: [] },
 ];
+const isCurrent = (n: (typeof nav)[number]) => [n.href, ...n.also].some((p) => path.startsWith(p));
 ---
 <!doctype html>
 <html lang="en">
@@ -39,7 +40,7 @@ const nav = [
         </a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
         <nav class="nav" id="nav" aria-label="Main">
-          {nav.map((n) => <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>)}
+          {nav.map((n) => <a href={n.href} aria-current={isCurrent(n) ? 'page' : undefined}>{n.label}</a>)}
           <a class="btn btn--solid btn--small" href="/donate/">Donate</a>
         </nav>
       </div>
